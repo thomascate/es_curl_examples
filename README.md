@@ -1,4 +1,4 @@
-Getting data out of Automate via the CLI. All of these curls need to be run from on the automate server if you're using the built in Elasticsearch. If you're running your own it needs to be from a node that can reach 9200 on your ES servers.
+Managing Automate's Elasticsearch via the CLI.
 
 # Make sure ES works
 
