@@ -60,6 +60,26 @@ Show health of elasticsearch. Since this response comes back as json we're addin
 }
 ```
 
+Show advanced ES health. Each index is configured to have 5 shards and each shard has one primary and one seconday. So the cluster will attempt to balance these shards across the cluster making sure to put the primary/secondary of each shard on different nodes. If we want to see exactly what's going on with each shard we can do that with the _cat/shards endpoint. This is useful when trying to determine why an index is yellow in a multi node setup or red in a single node setup.
+
+`curl localhost:9200/_cat/shards`
+
+```
+[root@automate tmp]# curl localhost:9200/_cat/shards
+node-state-1        3 p STARTED     0    159b 127.0.0.1 Piotr Rasputin
+node-state-1        3 r UNASSIGNED
+node-state-1        1 p STARTED     0    159b 127.0.0.1 Piotr Rasputin
+node-state-1        1 r UNASSIGNED
+node-state-1        2 p STARTED     2 686.3kb 127.0.0.1 Piotr Rasputin
+node-state-1        2 r UNASSIGNED
+node-state-1        4 p STARTED     1 428.8kb 127.0.0.1 Piotr Rasputin
+node-state-1        4 r UNASSIGNED
+node-state-1        0 p STARTED     0    159b 127.0.0.1 Piotr Rasputin
+node-state-1        0 r UNASSIGNED
+...
+```
+
+
 ES queries are fed in as JSON and can be passed in as url args, however this is fairly unwieldy. It's easier to put your json in a file and pass it in with -d. It's also important to make your searches as narrow as possible since node data is quite large you can easily request that ES feed you gigabytes of data. Here's a request searching for one converge item and only returning the name of the node that returned.
 
 
@@ -123,7 +143,7 @@ curl -XPOST -s localhost:9200/insights-2017.03.29/_search?pretty=true -d@data.js
 
 So on march 29th jhud_apache01 checked in 4 times, and runner.e9.io once.
 
-You can also pull one single node object out. This query is more advanced than the ones we've done before so let's walk through it. First we want the first page(page 0) and 1 result per page. This effectively limits our search to one result. We then exclude "node" from the _source object. This is because node is a raw string that contains the original node object, all of the items are later in the json so it's redundant here. Then since we want multiple terms we use a bool query to chain them together. We're searching for a converge run that has succeeded, so the node object pushed up at the end of a run,
+You can also pull one single node object out. This query is more advanced than the ones we've done before so let's walk through it. First we want the first page(page 0) and 1 result per page. This effectively limits our search to one result. We then exclude "node" from the _source object. This is because node is a raw string that contains the original node object, all of the items are later in the json so it's redundant here. Then since we want multiple terms we use a bool query to chain them together. We're searching for a converge run that has succeeded, so the node object pushed up at the end of a run. I left the response out of this doc since it is typically a few hundred KB.
 
 `curl -XPOST -s localhost:9200/insights-2017.03.29/_search?pretty=true -d@data.json`
 
