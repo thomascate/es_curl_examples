@@ -1,6 +1,7 @@
 Getting data out of Automate via the CLI. All of these curls need to be run from on the automate server if you're using the built in Elasticsearch. If you're running your own it needs to be from a node that can reach 9200 on your ES servers.
 
-#Make sure ES works
+# Make sure ES works
+
 ```
 [root@automate ~]# curl localhost:9200
 {
@@ -18,7 +19,8 @@ Getting data out of Automate via the CLI. All of these curls need to be run from
 }
 ```
 
-#Show indices and their sizes.
+# Show indices and their sizes.
+
 Useful to make sure that data is getting into ES and planning out data usage.
 We use -s to prevent curl from showing connection info and sort to order the indices by date.
 Yellow for index health means that the shards only exist on one node. This is normal for a single server automate cluster, for multi-node they should be green. Red means either ES just started and isn't fully up yet, or that data is corrupted.
@@ -39,7 +41,8 @@ yellow open node-state-1        5 1  3 1     1mb     1mb
 yellow open saved-searches      5 1  2 0  11.2kb  11.2kb
 ```
 
-#Show health of elasticsearch.
+# Show health of elasticsearch.
+
 Since this response comes back as json we're adding "pretty=true" to make it easier to read. You can leave this off if you're polling this via a script for monitoring purposes.
 ```
 [root@automate ~]# curl -s localhost:9200/_cluster/health?pretty=true
@@ -62,7 +65,8 @@ Since this response comes back as json we're adding "pretty=true" to make it eas
 }
 ```
 
-#Show advanced ES health.
+# Show advanced ES health.
+
 Each index is configured to have 5 shards and each shard has one primary and one seconday. So the cluster will attempt to balance these shards across the cluster making sure to put the primary/secondary of each shard on different nodes. If we want to see exactly what's going on with each shard we can do that with the _cat/shards endpoint. This is useful when trying to determine why an index is yellow in a multi node setup or red in a single node setup.
 
 `curl localhost:9200/_cat/shards`
@@ -82,7 +86,8 @@ node-state-1        0 r UNASSIGNED
 ...
 ```
 
-#Deleting one index
+# Deleting one index
+
 We create one index per day for insights. These indices can get quite large and may need to be cleaned up. Long term you should have the Reaper enabled to clean up old data. However if you need to clean space on your ES server, here's how.
 
 `curl -XDELETE localhost:9200/$INDEXNAME`
@@ -93,7 +98,8 @@ example
 {"acknowledged":true}
 ```
 
-#Using json queries to retrieve data
+# Using json queries to retrieve data
+
 ES queries are fed in as JSON and can be passed in as url args, however this is fairly unwieldy. It's easier to put your json in a file and pass it in with -d. It's also important to make your searches as narrow as possible since node data is quite large you can easily request that ES feed you gigabytes of data. Here's a request searching for one converge item and only returning the name of the node that returned.
 
 
