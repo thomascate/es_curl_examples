@@ -2,6 +2,9 @@ Managing Automate's Elasticsearch via the CLI.
 
 # Make sure ES works
 
+`curl localhost:9200'
+
+example
 ```
 [root@automate ~]# curl localhost:9200
 {
@@ -24,6 +27,9 @@ Managing Automate's Elasticsearch via the CLI.
 Useful to make sure that data is getting into ES and planning out data usage.
 We use -s to prevent curl from showing connection info and sort to order the indices by date.
 Yellow for index health means that the shards only exist on one node. This is normal for a single server automate cluster, for multi-node they should be green. Red means either ES just started and isn't fully up yet, or that data is corrupted.
+
+`curl -s localhost:9200/_cat/indices | sort`
+
 ```
 [root@automate ~]# curl -s localhost:9200/_cat/indices | sort
 yellow open .automate           5 1  1 0   3.8kb   3.8kb
@@ -44,6 +50,9 @@ yellow open saved-searches      5 1  2 0  11.2kb  11.2kb
 # Show health of elasticsearch.
 
 Since this response comes back as json we're adding "pretty=true" to make it easier to read. You can leave this off if you're polling this via a script for monitoring purposes.
+
+`curl -s localhost:9200/_cluster/heatlh?pretty=true`
+
 ```
 [root@automate ~]# curl -s localhost:9200/_cluster/health?pretty=true
 {
