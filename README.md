@@ -2,7 +2,7 @@ Managing Automate's Elasticsearch via the CLI.
 
 # Make sure ES works
 
-`curl localhost:9200'
+`curl localhost:9200`
 
 example
 ```
